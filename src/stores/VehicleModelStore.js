@@ -1,39 +1,47 @@
 import { makeObservable, observable, computed, toJS, action } from "mobx"
+import GetAllVehicleModels from "../services/VehicleModels/GetAllVehicleModels";
+import CreateVehicleModel from "../services/VehicleModels/CreateVehicleModel";
+import EditVehicleModel from "../services/VehicleModels/EditVehicleModel";
+import DeleteVehicleModel from "../services/VehicleModels/DeleteVehicleModel";
+import GetPaginatedVehicleModels from "../services/VehicleModels/GetPaginatedVehicleModels";
 
 class VehicleModelStore {
 
-    vehicleModels = [{id:1,makeId:2,name:'Golf',abrv:'G5'},{id:2,makeId:1,name:'A4',abrv:'A4'},{id:3,makeId:1,name:'A3',abrv:'A3'}]
+    vehicleModels = []
 
     constructor () {
         makeObservable( this, {
             vehicleModels: observable,
-            vehicleModelsNumber: computed
+            getVehicleModelsNumber: computed
         })  
     }
 
-    get vehicleModelsNumber () {
-        return this.vehicleModels.length;
-    }
-
-    deleteOne (id) {
-        this.vehicleModels = this.vehicleModels.filter((vehicle)=>vehicle.id!==id)
-    }
-
-    editOne (id, name, abrv) {
-        let tempVehicleModels = []
-
-        this.vehicleModels.forEach((vehicleMake, index)=>{
-            if(vehicleMake.id!==id) {
-                tempVehicleModels.push(vehicleMake)
-            } else {
-                tempVehicleModels.push({id:id, name: name, abrv: abrv})
-            }
+    getAllVehicleModels () {
+        GetAllVehicleModels().then((res)=>{
+            this.vehicleModels.replace(res.data)
         })
-        this.vehicleModels=[...tempVehicleModels]
     }
 
-    createOne (name, abrv) {
-        this.vehicleModels.unshift({id:Math.random(), name:name, abrv:abrv})
+    getPaginatedVehicleModels (MakeId,order,pageNumber,Name) {
+        GetPaginatedVehicleModels(MakeId,order,pageNumber, Name).then((res)=>{
+            this.vehicleModels=res
+        })
+    }
+
+    get getVehicleModelsNumber () {
+        return this.vehicleModels.data?.length;
+    }
+
+    deleteOneVehicleModel (id) {
+        DeleteVehicleModel(id)
+    }
+
+    editOneVehicleModel(id, name, abrv,makeId) {
+        EditVehicleModel(id,name,abrv,makeId)
+    }
+
+    createVehicleModel (name, abrv, makeId) {
+        CreateVehicleModel(name,abrv,makeId)
     }
 
 

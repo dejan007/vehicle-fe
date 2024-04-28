@@ -1,33 +1,13 @@
 import { makeObservable, observable, computed } from "mobx"
+import GetAllVehicleMakes from "../services/VehicleMakes/GetAllVehicleMakes";
+import DeleteVehicleMake from "../services/VehicleMakes/DeleteVehicleMake";
+import EditVehicleMake from "../services/VehicleMakes/EditVehicleMake";
+import CreateVehicleMake from "../services/VehicleMakes/CreateVehicleMake";
+import GetPaginatedVehicleMakes from "../services/VehicleMakes/GetPaginatedVehicleMakes";
 
 class VehicleMakeStore {
 
-    vehicleMakes = [{id:1, name: "Audi", abrv: "AU"},{id:2, name: "Volkswagen", abrv: "VW"}, {id:3, name: "Mercedes", abrv: "B220"}]
-
-    get getVehicleMakesNumber () {
-        return this.vehicleMakes.length;
-    }
-
-    deleteOne (id) {
-        this.vehicleMakes = this.vehicleMakes.filter((vehicle)=>vehicle.id!==id)
-    }
-
-    editOne (id, name, abrv) {
-        let tempVehicleMakes = []
-
-        this.vehicleMakes.forEach((vehicleMake, index)=>{
-            if(vehicleMake.id!==id) {
-                tempVehicleMakes.push(vehicleMake)
-            } else {
-                tempVehicleMakes.push({id:id, name: name, abrv: abrv})
-            }
-        })
-        this.vehicleMakes=[...tempVehicleMakes]
-    }
-
-    createOne (name, abrv) {
-        this.vehicleMakes.unshift({id:Math.random(), name:name, abrv:abrv})
-    }
+    vehicleMakes = []
 
     constructor () {
         makeObservable( this, {
@@ -36,7 +16,33 @@ class VehicleMakeStore {
         })  
     }
 
+    get getVehicleMakesNumber () {
+        return this.vehicleMakes.data?.length;
+    }
 
+    getPaginatedVehicleMakes (Order,PageNumber, name) {
+        GetPaginatedVehicleMakes(Order,PageNumber, name).then((res)=>{
+            this.vehicleMakes=res
+        })
+    }
+
+    getAllVehicleMakes () {
+        GetAllVehicleMakes().then((res)=>{
+            this.vehicleMakes=res
+        })
+    }
+
+    deleteOneVehicleMake (id) {
+        DeleteVehicleMake(id)
+    }
+
+    editOneVehicleMake (id, name, abrv) {
+        EditVehicleMake(id,name,abrv)
+    }
+
+    createVehicleMake (name, abrv) {
+        CreateVehicleMake(name, abrv)
+    }
 }
 
 const vehicleMakeStore = new VehicleMakeStore();

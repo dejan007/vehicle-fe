@@ -1,12 +1,18 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import Modal from 'react-modal';
 import vehicleModelStore from '../stores/VehicleModelStore';
+import vehicleMakeStore from '../stores/VehicleMakeStore';
 import { toJS } from 'mobx';
 
-function AddVehicleModelModal({ isOpen, setIsOpen, flag, setFlag }) {
+function AddVehicleModelModal({ isOpen, setIsOpen, refetchPaginatedVehicleModels }) {
 
     const [name, setName] = useState()
     const [abrv, setAbrv] = useState()
+    const [makeId, setMakeId] = useState(1)
+
+    useEffect(()=>{
+        vehicleMakeStore.getAllVehicleMakes()
+    },[])
 
     const customStyles = {
         content: {
@@ -21,11 +27,11 @@ function AddVehicleModelModal({ isOpen, setIsOpen, flag, setFlag }) {
     };
 
     const onSave = () => {
-        vehicleModelStore.createOne(name, abrv)
+        vehicleModelStore.createVehicleModel(name, abrv, makeId)
+        refetchPaginatedVehicleModels()
+        setIsOpen(false)
         setName("")
         setAbrv("")
-        setIsOpen(false)
-        setFlag(!flag)
     }
 
     const onCancel = () => {
@@ -58,6 +64,15 @@ function AddVehicleModelModal({ isOpen, setIsOpen, flag, setFlag }) {
                     className='w-[200px] h-[50px] border border-gray-400 p-2 pl-4 rounded-[6px]'
                     onChange={(e) => setAbrv(e.target.value)}
                 />
+            </div>
+
+            <div className='mb-6'>
+                <div className='text-gray-400'> Vehicle Make:</div>
+               <select name="" id="" className='w-[250px] h-[50px] border border-gray-400 rounded-[4px] pl-2' onChange={(e)=>setMakeId(e.target.value)}>
+                        {toJS(vehicleMakeStore).vehicleMakes?.data?.map((make,index)=>(
+                             <option value={make.Id} key={make.Id}>{make.Name}</option>
+                        ))}
+                    </select>
             </div>
 
             <div className='w-full flex gap-x-2'>

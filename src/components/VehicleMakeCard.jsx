@@ -3,17 +3,17 @@ import vehicleMakeStore from '../stores/VehicleMakeStore';
 import { observer } from "mobx-react"
 import { toJS } from 'mobx';
 
-function VehicleMakeCard({ brand, flag, setFlag }) {
+function VehicleMakeCard({ brand,refetchPaginatedVehicleMakes }) {
 
     const [editingMode, setEditingMode] = useState(false)
-    const [newName, setNewName] = useState(brand.name)
-    const [newAbrv, setNewAbrv] = useState(brand.abrv)
+    const [newName, setNewName] = useState(brand.Name)
+    const [newAbrv, setNewAbrv] = useState(brand.Abrv)
 
 
     const editVehicleCard = () =>{
-        vehicleMakeStore.editOne(brand.id, newName, newAbrv)
+        vehicleMakeStore.editOneVehicleMake(brand.Id, newName, newAbrv)
+        refetchPaginatedVehicleMakes()
         setEditingMode(false)
-        setFlag(!flag)
     }
 
     return (
@@ -22,8 +22,8 @@ function VehicleMakeCard({ brand, flag, setFlag }) {
                 <>
 
                     <div>
-                        <div className='text-[20px] font-medium'>{brand.name}</div>
-                        <div className='text-[30px] uppercase text-gray-500'>{brand.abrv}</div>
+                        <div className='text-[20px] font-medium'>{brand.Name}</div>
+                        <div className='text-[30px] uppercase text-gray-500'>{brand.Abrv}</div>
                     </div>
 
                     <div className='flex flex-col gap-y-2'>
@@ -36,8 +36,8 @@ function VehicleMakeCard({ brand, flag, setFlag }) {
                         <button
                             className='border border-red-700 rounded-[4px] p-1 px-2 text-red-700 hover:text-white hover:bg-red-700 transition-all duration-500'
                             onClick={() => {
-                                vehicleMakeStore.deleteOne(brand.id);
-                                setFlag(!flag)
+                                vehicleMakeStore.deleteOneVehicleMake(brand.Id);
+                                refetchPaginatedVehicleMakes()
                             }}
                         >
                             Delete
@@ -53,13 +53,13 @@ function VehicleMakeCard({ brand, flag, setFlag }) {
                         <input
                          type="text"
                          className="border border-gray-400 rounded-[4px] p-1 pl-2 mb-1"
-                         defaultValue={brand.name}
+                         defaultValue={brand.Name}
                          onChange={(e)=>setNewName(e.target.value)}
                           />
                         <input
                          type="text"
                          className="border border-gray-400 rounded-[4px] p-1 pl-2"
-                         defaultValue={brand.abrv}
+                         defaultValue={brand.Abrv}
                          onChange={(e)=>setNewAbrv(e.target.value)} />
                     </div>
 
