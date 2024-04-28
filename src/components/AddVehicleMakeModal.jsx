@@ -3,7 +3,7 @@ import Modal from 'react-modal';
 import vehicleMakeStore from '../stores/VehicleMakeStore';
 import { toJS } from 'mobx';
 
-function AddVehicleMakeModal({ isOpen, setIsOpen, flag, setFlag }) {
+function AddVehicleMakeModal({ isOpen, setIsOpen, flag, setFlag, refetchPaginatedVehicleMakes }) {
 
     const [name, setName] = useState()
     const [abrv, setAbrv] = useState()
@@ -21,7 +21,8 @@ function AddVehicleMakeModal({ isOpen, setIsOpen, flag, setFlag }) {
     };
 
     const onSave = () => {
-        vehicleMakeStore.createOne(name, abrv)
+        vehicleMakeStore.createVehicleMake(name, abrv)
+        refetchPaginatedVehicleMakes()
         setName("")
         setAbrv("")
         setIsOpen(false)

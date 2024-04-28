@@ -3,7 +3,7 @@ import vehicleModelStore from '../stores/VehicleModelStore';
 import { observer } from "mobx-react"
 import { toJS } from 'mobx';
 
-function VehicleModelCard({ model, flag, setFlag }) {
+function VehicleModelCard({ model, refetchPaginatedVehicleModels}) {
 
     const [editingMode, setEditingMode] = useState(false)
     const [newName, setNewName] = useState(model.name)
@@ -12,9 +12,13 @@ function VehicleModelCard({ model, flag, setFlag }) {
 
 
     const editVehicleCard = () =>{
-        vehicleModelStore.editOne(model.id, newName, newAbrv)
+        let updates = {
+            newName: newName || model.Name,
+            newAbrv: newAbrv || model.Abrv
+        }
+        vehicleModelStore.editOneVehicleModel(model.Id, updates.newName, updates.newAbrv, model.MakeId)
+        refetchPaginatedVehicleModels()
         setEditingMode(false)
-        setFlag(!flag)
     }
 
     return (
@@ -23,8 +27,8 @@ function VehicleModelCard({ model, flag, setFlag }) {
                 <>
 
                     <div>
-                        <div className='text-[20px] font-medium'>{model.name}</div>
-                        <div className='text-[30px] uppercase text-gray-500'>{model.abrv}</div>
+                        <div className='text-[20px] font-medium'>{model.Name}</div>
+                        <div className='text-[30px] uppercase text-gray-500'>{model.Abrv}</div>
                     </div>
 
                     <div className='flex flex-col gap-y-2'>
@@ -37,8 +41,8 @@ function VehicleModelCard({ model, flag, setFlag }) {
                         <button
                             className='border border-red-700 rounded-[4px] p-1 px-2 text-red-700 hover:text-white hover:bg-red-700 transition-all duration-500'
                             onClick={() => {
-                                vehicleModelStore.deleteOne(model.id);
-                                setFlag(!flag)
+                                vehicleModelStore.deleteOneVehicleModel(model.Id);
+                                refetchPaginatedVehicleModels()
                             }}
                         >
                             Delete
@@ -54,13 +58,13 @@ function VehicleModelCard({ model, flag, setFlag }) {
                         <input
                          type="text"
                          className="border border-gray-400 rounded-[4px] p-1 pl-2 mb-1"
-                         defaultValue={model.name}
+                         defaultValue={model.Name}
                          onChange={(e)=>setNewName(e.target.value)}
                           />
                         <input
                          type="text"
                          className="border border-gray-400 rounded-[4px] p-1 pl-2"
-                         defaultValue={model.abrv}
+                         defaultValue={model.Abrv}
                          onChange={(e)=>setNewAbrv(e.target.value)} />
                     </div>
 
